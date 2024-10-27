@@ -16,9 +16,18 @@ import ButtonIcon from "./ButtonIcon";
 
 const windowWidth = Dimensions.get("window").width;
 
-export default function ImagePickerCarousel() {
+interface Props {
+  selectedImages: string[];
+  setImages: (images: string[]) => void;
+  removeImages: () => void;
+}
+
+export default function ImagePickerCarousel({
+  selectedImages,
+  setImages,
+  removeImages,
+}: Props) {
   const pagerRef = useRef(null);
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
 
   const pickImageAsync = async () => {
@@ -31,16 +40,12 @@ export default function ImagePickerCarousel() {
     });
 
     if (!result.canceled) {
-      setSelectedImages(result.assets.map((asset) => asset.uri));
+      setImages(result.assets.map((asset) => asset.uri));
     }
   };
 
   const onPageSelected = (e: any) => {
     setCurrentPage(e.nativeEvent.position);
-  };
-
-  const removeSelectedImages = () => {
-    setSelectedImages([]);
   };
 
   return (
@@ -91,7 +96,7 @@ export default function ImagePickerCarousel() {
             </View>
           </View>
           <View style={styles.buttonDelete}>
-            <ButtonIcon icon="trash" onPress={removeSelectedImages} />
+            <ButtonIcon icon="trash" onPress={removeImages} />
           </View>
         </>
       )}
