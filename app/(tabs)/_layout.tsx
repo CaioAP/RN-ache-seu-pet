@@ -26,6 +26,39 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="newPost"
+        options={{
+          title: "Criar novo",
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialSymbol
+              name="add_box"
+              color={focused ? color : "#aaaaaa"}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: "Mensagens",
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialSymbol name="chat" color={focused ? color : "#aaaaaa"} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Perfil",
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialSymbol
+              name="account_circle"
+              color={focused ? color : "#aaaaaa"}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
