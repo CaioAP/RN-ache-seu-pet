@@ -1,17 +1,35 @@
 import { Tabs } from "expo-router";
 import MaterialSymbol from "@/components/MaterialSymbol";
+import { StyleSheet, Text } from "react-native";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerShown: false,
         tabBarActiveTintColor: "#FF7733",
+        tabBarStyle: {
+          height: 52,
+          backgroundColor: "#ffffff",
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Início",
+          tabBarLabel: ({ focused }) => {
+            if (focused) {
+              return (
+                <Text style={[styles.tabBarLabel, styles.tabBarLabelFocused]}>
+                  Início
+                </Text>
+              );
+            }
+            return <Text style={styles.tabBarLabel}>Início</Text>;
+          },
           tabBarIcon: ({ color, focused }) => (
             <MaterialSymbol name="home" color={focused ? color : "#aaaaaa"} />
           ),
@@ -20,7 +38,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Pesquisar",
+          tabBarLabel: ({ focused }) => {
+            if (focused) {
+              return (
+                <Text style={[styles.tabBarLabel, styles.tabBarLabelFocused]}>
+                  Pesquisar
+                </Text>
+              );
+            }
+            return <Text style={styles.tabBarLabel}>Pesquisar</Text>;
+          },
           tabBarIcon: ({ color, focused }) => (
             <MaterialSymbol name="search" color={focused ? color : "#aaaaaa"} />
           ),
@@ -29,7 +56,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="newPost"
         options={{
-          title: "Criar novo",
+          tabBarLabel: ({ focused }) => {
+            if (focused) {
+              return (
+                <Text style={[styles.tabBarLabel, styles.tabBarLabelFocused]}>
+                  Criar novo
+                </Text>
+              );
+            }
+            return <Text style={styles.tabBarLabel}>Criar novo</Text>;
+          },
           tabBarIcon: ({ color, focused }) => (
             <MaterialSymbol
               name="add_box"
@@ -41,7 +77,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="chat"
         options={{
-          title: "Mensagens",
+          tabBarLabel: ({ focused }) => {
+            if (focused) {
+              return (
+                <Text style={[styles.tabBarLabel, styles.tabBarLabelFocused]}>
+                  Mensagens
+                </Text>
+              );
+            }
+            return <Text style={styles.tabBarLabel}>Mensagens</Text>;
+          },
           tabBarIcon: ({ color, focused }) => (
             <MaterialSymbol name="chat" color={focused ? color : "#aaaaaa"} />
           ),
@@ -50,7 +95,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Perfil",
+          tabBarLabel: ({ focused }) => {
+            if (focused) {
+              return (
+                <Text style={[styles.tabBarLabel, styles.tabBarLabelFocused]}>
+                  Perfil
+                </Text>
+              );
+            }
+            return <Text style={styles.tabBarLabel}>Perfil</Text>;
+          },
           tabBarIcon: ({ color, focused }) => (
             <MaterialSymbol
               name="account_circle"
@@ -62,3 +116,16 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBarLabel: {
+    marginBottom: 4,
+    fontSize: 12,
+    lineHeight: 12,
+    fontWeight: "bold",
+    color: "#aaaaaa",
+  },
+  tabBarLabelFocused: {
+    color: "#FF7733",
+  },
+});
