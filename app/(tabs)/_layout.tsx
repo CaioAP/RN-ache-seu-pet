@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function TabLayout() {
   useEffect(() => {
-    StatusBar.setBarStyle("dark-content");
+    StatusBar.setBarStyle("light-content");
   }, []);
 
   return (

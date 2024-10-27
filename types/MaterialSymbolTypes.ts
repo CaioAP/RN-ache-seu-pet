@@ -14,4 +14,5 @@ export type MaterialSymbolTypes =
   | "open_in_new"
   | "search"
   | "send"
-  | "share";
+  | "share"
+  | "trash";

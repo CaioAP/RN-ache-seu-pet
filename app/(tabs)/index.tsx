@@ -1,7 +1,5 @@
 import { Text, View } from "react-native";
 
-import MaterialSymbol from "@/components/MaterialSymbol";
-
 export default function Index() {
   return (
     <View
