@@ -7,6 +7,9 @@ import ImagePickThumbnail from "@/components/ImagePickThumbnail";
 import InputField from "@/components/InputField";
 import NumberField from "@/components/NumberField";
 import CurrencyField from "@/components/CurrencyField";
+import MapScreen from "@/components/MapScreen";
+import { Coordinates } from "@/types/Coordinates";
+import { InitialRegion } from "@/constants/InitialRegion";
 
 export default function NewPost() {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -16,6 +19,7 @@ export default function NewPost() {
   const [petBreed, setPetBreed] = useState<string>("");
   const [petDescription, setPetDescription] = useState<string>("");
   const [petReward, setPetReward] = useState<number>(0);
+  const [petLocation, setPetLocation] = useState<Coordinates>(InitialRegion);
 
   const setImages = (images: string[]) => {
     setSelectedImages(images);
@@ -89,6 +93,12 @@ export default function NewPost() {
                 Escolha no mapa o local em que viu seu pet pela última vez
               </Text>
             </View>
+            <View style={{ flex: 1, borderRadius: 8 }}>
+              <MapScreen
+                initialRegion={InitialRegion}
+                onChange={(coords) => setPetLocation(coords)}
+              />
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -97,16 +107,6 @@ export default function NewPost() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-  },
-
   form: {
     flex: 1,
     gap: 16,
