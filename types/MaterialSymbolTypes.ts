@@ -1,5 +1,6 @@
 export type MaterialSymbolTypes =
   | "account_circle"
+  | "add"
   | "add_box"
   | "add_photo_image"
   | "arrow_back"
@@ -12,6 +13,7 @@ export type MaterialSymbolTypes =
   | "home"
   | "location_on"
   | "open_in_new"
+  | "remove"
   | "search"
   | "send"
   | "share"
