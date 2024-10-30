@@ -10,16 +10,19 @@ import CurrencyField from "@/components/CurrencyField";
 import MapScreen from "@/components/MapScreen";
 import { Coordinates } from "@/types/Coordinates";
 import { InitialRegion } from "@/constants/InitialRegion";
+import Button from "@/components/Button";
+import { createPost } from "@/api/Post";
 
 export default function NewPost() {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const [petName, setPetName] = useState<string>("");
-  const [petAge, setPetAge] = useState<number>(0);
-  const [petColor, setPetColor] = useState<string>("");
-  const [petBreed, setPetBreed] = useState<string>("");
-  const [petDescription, setPetDescription] = useState<string>("");
-  const [petReward, setPetReward] = useState<number>(0);
-  const [petLocation, setPetLocation] = useState<Coordinates>(InitialRegion);
+  const [name, setName] = useState<string>("");
+  const [age, setAge] = useState<number>(0);
+  const [color, setColor] = useState<string>("");
+  const [breed, setBreed] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [reward, setReward] = useState<number>(0);
+  const [location, setLocation] = useState<Coordinates>(InitialRegion);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const setImages = (images: string[]) => {
     setSelectedImages(images);
@@ -27,6 +30,21 @@ export default function NewPost() {
 
   const removeImages = () => {
     setSelectedImages([]);
+  };
+
+  const submitPost = () => {
+    setLoading(true);
+    createPost({
+      images: selectedImages,
+      name,
+      age,
+      color,
+      breed,
+      description,
+      reward,
+      location,
+    });
+    setTimeout(() => setLoading(false), 2000);
   };
 
   return (
@@ -47,32 +65,32 @@ export default function NewPost() {
             <View style={styles.inputBlock}>
               <InputField
                 label="Nome"
-                initValue={petName}
+                initValue={name}
                 maxLength={10}
-                onChange={(text) => setPetName(text)}
+                onChange={(text) => setName(text)}
               />
               <View style={styles.inputRow}>
                 <NumberField
                   label="Idade"
-                  initValue={petAge}
+                  initValue={age}
                   min={0}
-                  onChange={setPetAge}
+                  onChange={setAge}
                 />
                 <InputField
                   label="Cor"
-                  initValue={petColor}
-                  onChange={(text) => setPetColor(text)}
+                  initValue={color}
+                  onChange={(text) => setColor(text)}
                 />
               </View>
               <InputField
                 label="Raça"
-                initValue={petBreed}
-                onChange={(text) => setPetBreed(text)}
+                initValue={breed}
+                onChange={(text) => setBreed(text)}
               />
               <InputField
                 label="Descrição"
-                initValue={petDescription}
-                onChange={(text) => setPetDescription(text)}
+                initValue={description}
+                onChange={(text) => setDescription(text)}
               />
             </View>
             <View>
@@ -84,8 +102,8 @@ export default function NewPost() {
             </View>
             <CurrencyField
               placeholder="R$ 0,00"
-              initValue={petReward}
-              onChange={(text) => setPetReward(text)}
+              initValue={reward}
+              onChange={(text) => setReward(text)}
             />
             <View>
               <Text style={styles.label}>Onde o perdeu?</Text>
@@ -96,9 +114,15 @@ export default function NewPost() {
             <View style={{ flex: 1, borderRadius: 8 }}>
               <MapScreen
                 initialRegion={InitialRegion}
-                onChange={(coords) => setPetLocation(coords)}
+                onChange={(coords) => setLocation(coords)}
               />
             </View>
+            <Button
+              primary
+              loading={loading}
+              label="Salvar"
+              onPress={submitPost}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>

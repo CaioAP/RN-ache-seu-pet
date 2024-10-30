@@ -13,6 +13,7 @@ export type MaterialSymbolTypes =
   | "home"
   | "location_on"
   | "open_in_new"
+  | "refresh"
   | "remove"
   | "search"
   | "send"

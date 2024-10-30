@@ -1,12 +1,21 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Animated,
+  Easing,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { MaterialSymbolTypes } from "@/types/MaterialSymbolTypes";
 import MaterialSymbol from "./MaterialSymbol";
+import { useEffect, useRef } from "react";
 
 interface Props {
   label: string;
   primary?: boolean;
   icon?: MaterialSymbolTypes;
+  loading?: boolean;
   onPress: () => void;
 }
 
@@ -14,6 +23,7 @@ export default function Button({
   primary = false,
   label,
   icon,
+  loading,
   onPress,
 }: Props) {
   let buttonStyle = styles.button;
@@ -24,6 +34,40 @@ export default function Button({
     buttonStyle = styles.buttonPrimary;
     labelStyle = styles.labelPrimary;
     iconColor = "#ffffff";
+  }
+
+  if (loading) {
+    const spinValue = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+      Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 750,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })
+      ).start();
+    }, []);
+
+    const spin = spinValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: ["0deg", "360deg"],
+    });
+
+    return (
+      <Pressable
+        style={[buttonStyle, styles.buttonLoading]}
+        disabled
+        onPress={onPress}
+      >
+        <View style={styles.buttonContent}>
+          <Animated.View style={{ transform: [{ rotate: spin }] }}>
+            <MaterialSymbol name="refresh" size={24} color={iconColor} />
+          </Animated.View>
+        </View>
+      </Pressable>
+    );
   }
 
   return (
@@ -64,6 +108,9 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
     borderRadius: 8,
     backgroundColor: "#ff7733",
+  },
+  buttonLoading: {
+    backgroundColor: "#ffa374",
   },
   buttonContent: {
     flexDirection: "row",
