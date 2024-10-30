@@ -1,13 +1,8 @@
 import { Tabs } from "expo-router";
 import MaterialSymbol from "@/components/MaterialSymbol";
-import { StatusBar, StyleSheet, Text } from "react-native";
-import { useEffect } from "react";
+import { StyleSheet, Text } from "react-native";
 
 export default function TabLayout() {
-  useEffect(() => {
-    StatusBar.setBarStyle("light-content");
-  }, []);
-
   return (
     <Tabs
       screenOptions={{

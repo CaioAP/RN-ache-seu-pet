@@ -1,4 +1,6 @@
 import { Stack } from "expo-router";
+import { useEffect } from "react";
+import { setStatusBarStyle } from "expo-status-bar";
 import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
@@ -13,6 +15,12 @@ const theme = {
 };
 
 export default function RootLayout() {
+  useEffect(() => {
+    setTimeout(() => {
+      setStatusBarStyle("dark");
+    }, 0);
+  }, []);
+
   return (
     <PaperProvider theme={theme}>
       <Stack>
