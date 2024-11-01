@@ -10,12 +10,14 @@ import {
 import { MaterialSymbolTypes } from "@/types/MaterialSymbolTypes";
 import MaterialSymbol from "./MaterialSymbol";
 import { useEffect, useRef } from "react";
+import { Theme } from "@/constants/Theme";
 
 interface Props {
   label: string;
   primary?: boolean;
   icon?: MaterialSymbolTypes;
   loading?: boolean;
+  disabled?: boolean;
   onPress: () => void;
 }
 
@@ -24,16 +26,17 @@ export default function Button({
   label,
   icon,
   loading,
+  disabled,
   onPress,
 }: Props) {
   let buttonStyle = styles.button;
   let labelStyle = styles.label;
-  let iconColor = "#ff7733";
+  let iconColor = Theme.colors.primary;
 
   if (primary) {
     buttonStyle = styles.buttonPrimary;
     labelStyle = styles.labelPrimary;
-    iconColor = "#ffffff";
+    iconColor = Theme.colors.background;
   }
 
   if (loading) {
@@ -57,7 +60,7 @@ export default function Button({
 
     return (
       <Pressable
-        style={[buttonStyle, styles.buttonLoading]}
+        style={[buttonStyle, styles.buttonDisabled]}
         disabled
         onPress={onPress}
       >
@@ -71,7 +74,11 @@ export default function Button({
   }
 
   return (
-    <Pressable style={buttonStyle} onPress={onPress}>
+    <Pressable
+      style={[buttonStyle, disabled ? styles.buttonDisabled : null]}
+      disabled={disabled}
+      onPress={onPress}
+    >
       <View style={styles.buttonContent}>
         {icon ? (
           <MaterialSymbol name={icon} size={24} color={iconColor} />
@@ -92,8 +99,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: "#ff7733",
-    borderRadius: 8,
+    borderColor: Theme.colors.primary,
+    borderRadius: Theme.borderRadius,
     backgroundColor: "transparent",
   },
   buttonPrimary: {
@@ -106,11 +113,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderWidth: 0,
     borderColor: "transparent",
-    borderRadius: 8,
-    backgroundColor: "#ff7733",
+    borderRadius: Theme.borderRadius,
+    backgroundColor: Theme.colors.primary,
   },
-  buttonLoading: {
-    backgroundColor: "#ffa374",
+  buttonDisabled: {
+    backgroundColor: Theme.colors.primary300,
   },
   buttonContent: {
     flexDirection: "row",
@@ -118,13 +125,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   label: {
-    color: "#ff7733",
+    color: Theme.colors.primary,
     fontSize: 16,
     lineHeight: 24,
     fontWeight: "bold",
   },
   labelPrimary: {
-    color: "#ffffff",
+    color: Theme.colors.background,
     fontSize: 16,
     lineHeight: 24,
     fontWeight: "bold",

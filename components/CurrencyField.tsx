@@ -1,5 +1,7 @@
+import { Theme } from "@/constants/Theme";
 import { useState } from "react";
-import { KeyboardTypeOptions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+
 import { TextInput } from "react-native-paper";
 
 interface Props {
@@ -67,10 +69,10 @@ export default function CurrencyField({
 
 const styles = StyleSheet.create({
   inputWrapper: {
-    borderRadius: 8,
+    borderRadius: Theme.borderRadius,
   },
   input: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: Theme.colors.background,
   },
 });

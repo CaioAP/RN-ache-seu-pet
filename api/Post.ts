@@ -1,17 +1,6 @@
-import { Coordinates } from "@/types/Coordinates";
+import { Post } from "@/types/Post";
 
-interface CreatePostData {
-  images: string[];
-  name: string;
-  age?: number;
-  color?: string;
-  breed?: string;
-  description: string;
-  reward?: number;
-  location?: Coordinates;
-}
-
-export const createPost = (data: CreatePostData) => {
+export const createPost = (data: Post) => {
   console.log("createPost :>> ", data);
   return;
 };

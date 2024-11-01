@@ -12,85 +12,172 @@ import { Coordinates } from "@/types/Coordinates";
 import { InitialRegion } from "@/constants/InitialRegion";
 import Button from "@/components/Button";
 import { createPost } from "@/api/Post";
+import { Post } from "@/types/Post";
+import { Theme } from "@/constants/Theme";
+
+const initialFormData = {
+  id: null,
+  images: [],
+  thumbnailImage: "",
+  name: "",
+  age: 0,
+  color: "",
+  breed: "",
+  description: "",
+  reward: 0,
+  location: InitialRegion,
+};
+
+const initialErrors = {
+  images: "",
+  name: "",
+  color: "",
+  breed: "",
+  description: "",
+};
 
 export default function NewPost() {
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const [name, setName] = useState<string>("");
-  const [age, setAge] = useState<number>(0);
-  const [color, setColor] = useState<string>("");
-  const [breed, setBreed] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [reward, setReward] = useState<number>(0);
-  const [location, setLocation] = useState<Coordinates>(InitialRegion);
+  const [formData, setFormData] = useState<Post>(initialFormData);
+  const [errors, setErrors] = useState(initialErrors);
+  const [isFormValid, setIsFormValid] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const setImages = (images: string[]) => {
-    setSelectedImages(images);
+  const handleInputChange = (
+    field: string,
+    value: number | string | string[] | Coordinates
+  ) => {
+    setFormData({ ...formData, [field]: value });
+    validateFormField(field, value);
   };
 
   const removeImages = () => {
-    setSelectedImages([]);
+    handleInputChange("images", []);
+    validateFormField("images", []);
   };
 
-  const submitPost = () => {
-    setLoading(true);
-    createPost({
-      images: selectedImages,
-      name,
-      age,
-      color,
-      breed,
-      description,
-      reward,
-      location,
-    });
-    setTimeout(() => setLoading(false), 2000);
+  const validateFormField = (
+    field: string,
+    value: number | string | string[] | Coordinates
+  ) => {
+    let message = "";
+    if (field === "images" && !(value as string[]).length) {
+      console.log("=== IMAGES ERROR ===");
+      message = "Insira ao menos uma imagem";
+    } else if (!value) {
+      console.log("=== VALUE ERROR ===");
+      const labelFieldReference = {
+        name: "Nome",
+        age: "Idade",
+        color: "Cor",
+        breed: "Raça",
+      };
+      message = `${
+        labelFieldReference[field as keyof typeof labelFieldReference]
+      } é obrigatório`;
+    }
+    setErrors({ ...errors, [field]: message });
+  };
+
+  const validateForm = () => {
+    const newErrors: typeof errors = { ...initialErrors };
+    if (!formData.images.length) {
+      newErrors.images = "Insira ao menos uma imagem";
+    }
+    if (!formData.name) {
+      newErrors.name = "Nome é obrigatório";
+    }
+    if (!formData.color) {
+      newErrors.color = "Cor é obrigatório";
+    }
+    if (!formData.breed) {
+      newErrors.breed = "Raça é obrigatório";
+    }
+    if (!formData.description) {
+      newErrors.description = "Descrição é obrigatório";
+    }
+    setErrors(newErrors);
+    setIsFormValid(Object.keys(newErrors).length === 0);
+  };
+
+  const handleSubmit = () => {
+    validateForm();
+    if (isFormValid) {
+      setLoading(true);
+      createPost(formData);
+      setTimeout(() => setLoading(false), 2000);
+    }
   };
 
   return (
     <SafeAreaProvider style={{ backgroundColor: "#fff" }}>
       <SafeAreaView>
         <ScrollView>
-          <ImagePickerCarousel
-            selectedImages={selectedImages}
-            setImages={setImages}
-            removeImages={removeImages}
-          />
+          <View>
+            <ImagePickerCarousel
+              selectedImages={formData.images}
+              setImages={(images) => handleInputChange("images", images)}
+              removeImages={removeImages}
+            />
+            {errors.images ? (
+              <Text style={styles.errorMessage}>{errors.images}</Text>
+            ) : null}
+          </View>
           <View style={styles.form}>
-            {selectedImages.length ? (
+            {formData.images.length ? (
               <Text style={styles.label}>Escolha a foto de capa</Text>
             ) : null}
-            <ImagePickThumbnail images={selectedImages} />
+            <ImagePickThumbnail
+              images={formData.images}
+              onChange={(image) => handleInputChange("thumbnailImage", image)}
+            />
             <Text style={styles.label}>Dados do pet</Text>
             <View style={styles.inputBlock}>
               <InputField
                 label="Nome"
-                initValue={name}
-                maxLength={10}
-                onChange={(text) => setName(text)}
+                initValue={formData.name}
+                maxLength={30}
+                error={!!errors.name}
+                errorMessage={errors.name}
+                required
+                onChange={(name) => handleInputChange("name", name)}
               />
               <View style={styles.inputRow}>
                 <NumberField
                   label="Idade"
-                  initValue={age}
+                  initValue={formData.age}
                   min={0}
-                  onChange={setAge}
+                  onChange={(age) => handleInputChange("age", age)}
                 />
                 <InputField
                   label="Cor"
-                  initValue={color}
-                  onChange={(text) => setColor(text)}
+                  initValue={formData.color}
+                  maxLength={30}
+                  error={!!errors.color}
+                  errorMessage={errors.color}
+                  required
+                  onChange={(color) => handleInputChange("color", color)}
                 />
               </View>
               <InputField
                 label="Raça"
-                initValue={breed}
-                onChange={(text) => setBreed(text)}
+                initValue={formData.breed}
+                maxLength={30}
+                error={!!errors.breed}
+                errorMessage={errors.breed}
+                required
+                onChange={(breed) => handleInputChange("breed", breed)}
               />
               <InputField
                 label="Descrição"
-                initValue={description}
-                onChange={(text) => setDescription(text)}
+                initValue={formData.description}
+                multiline
+                maxLength={250}
+                error={!!errors.description}
+                errorMessage={errors.description}
+                required
+                onChange={(description) =>
+                  handleInputChange("description", description)
+                }
               />
             </View>
             <View>
@@ -102,8 +189,8 @@ export default function NewPost() {
             </View>
             <CurrencyField
               placeholder="R$ 0,00"
-              initValue={reward}
-              onChange={(text) => setReward(text)}
+              initValue={formData.reward}
+              onChange={(reward) => handleInputChange("reward", reward)}
             />
             <View>
               <Text style={styles.label}>Onde o perdeu?</Text>
@@ -114,14 +201,14 @@ export default function NewPost() {
             <View style={{ flex: 1, borderRadius: 8 }}>
               <MapScreen
                 initialRegion={InitialRegion}
-                onChange={(coords) => setLocation(coords)}
+                onChange={(location) => handleInputChange("location", location)}
               />
             </View>
             <Button
-              primary
-              loading={loading}
               label="Salvar"
-              onPress={submitPost}
+              loading={loading}
+              primary
+              onPress={handleSubmit}
             />
           </View>
         </ScrollView>
@@ -149,10 +236,17 @@ const styles = StyleSheet.create({
   },
   inputBlock: {
     flex: 1,
-    gap: 24,
+    gap: 4,
   },
   inputRow: {
     flexDirection: "row",
     gap: 16,
+  },
+  errorMessage: {
+    marginTop: 2,
+    marginLeft: 16,
+    fontSize: 12,
+    lineHeight: 16,
+    color: Theme.colors.error,
   },
 });

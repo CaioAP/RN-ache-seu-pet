@@ -4,12 +4,14 @@ import { FlatList, Platform, Pressable, StyleSheet, View } from "react-native";
 
 interface Props {
   images: string[];
+  onChange: (image: string) => void;
 }
 
-export default function ImagePickThumbnail({ images }: Props) {
+export default function ImagePickThumbnail({ images, onChange }: Props) {
   const [selected, setSelected] = useState<number>(0);
 
-  const onSelect = (index: number) => {
+  const onSelect = (item: string, index: number) => {
+    onChange(item);
     setSelected(index);
   };
 
@@ -34,7 +36,7 @@ export default function ImagePickThumbnail({ images }: Props) {
         return (
           <Pressable
             style={styles.imageContainer}
-            onPress={() => onSelect(index)}
+            onPress={() => onSelect(item, index)}
           >
             <Image
               source={{ uri: item }}
