@@ -8,7 +8,7 @@ import LabelField from "./LabelField";
 
 interface Props {
   label?: string;
-  initValue: number;
+  value: number;
   min?: number;
   max?: number;
   required?: boolean;
@@ -19,7 +19,7 @@ interface Props {
 
 export default function NumberField({
   label,
-  initValue,
+  value,
   min,
   max,
   required,
@@ -27,18 +27,20 @@ export default function NumberField({
   errorMessage,
   onChange,
 }: Props) {
-  const [value, setValue] = useState(String(initValue));
-
   const addValue = () => {
-    const valueNumber = Number(value);
-    if (max !== undefined && valueNumber >= max) return;
-    setValue(String(valueNumber + 1));
+    let newValue = value + 1;
+    if (max !== undefined && newValue > max) {
+      newValue = max;
+    }
+    onChange(newValue);
   };
 
   const substractValue = () => {
-    const valueNumber = Number(value);
-    if (min !== undefined && valueNumber <= min) return;
-    setValue(String(valueNumber - 1));
+    let newValue = value - 1;
+    if (min !== undefined && newValue < min) {
+      newValue = min;
+    }
+    onChange(newValue);
   };
 
   return (
@@ -56,14 +58,14 @@ export default function NumberField({
         </Pressable>
         <TextInput
           mode="outlined"
+          outlineColor="#aaaaaa"
+          placeholderTextColor="#aaaaaa"
           label={<LabelField text={label} required={required} />}
-          value={value}
+          value={String(value)}
           editable={false}
           error={error}
           style={styles.input}
           outlineStyle={styles.inputWrapper}
-          outlineColor="#aaaaaa"
-          onChangeText={() => onChange(Number(value))}
         />
         <Pressable
           style={[

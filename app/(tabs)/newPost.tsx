@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
@@ -15,7 +15,23 @@ import { createPost } from "@/api/Post";
 import { Post } from "@/types/Post";
 import { Theme } from "@/constants/Theme";
 
-const initialFormData = {
+interface FormErrors {
+  images: string;
+  name: string;
+  color: string;
+  breed: string;
+  description: string;
+}
+
+interface FormTouched {
+  images: boolean;
+  name: boolean;
+  color: boolean;
+  breed: boolean;
+  description: boolean;
+}
+
+const initialFormData: Post = {
   id: null,
   images: [],
   thumbnailImage: "",
@@ -25,10 +41,10 @@ const initialFormData = {
   breed: "",
   description: "",
   reward: 0,
-  location: InitialRegion,
+  location: { ...InitialRegion },
 };
 
-const initialErrors = {
+const initialErrors: FormErrors = {
   images: "",
   name: "",
   color: "",
@@ -36,77 +52,86 @@ const initialErrors = {
   description: "",
 };
 
+const initialTouched: FormTouched = {
+  images: false,
+  name: false,
+  color: false,
+  breed: false,
+  description: false,
+};
+
 export default function NewPost() {
-  const [formData, setFormData] = useState<Post>(initialFormData);
-  const [errors, setErrors] = useState(initialErrors);
+  const [formData, setFormData] = useState<Post>({ ...initialFormData });
+  const [touched, setTouched] = useState<FormTouched>({ ...initialTouched });
+  const [errors, setErrors] = useState<FormErrors>(initialErrors);
   const [isFormValid, setIsFormValid] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const handleImageSelect = (newImages: string[]) => {
+    handleInputChange("images", newImages);
+    handleInputTouched("images");
+  };
+
+  const handleImageRemove = () => {
+    handleInputChange("images", []);
+  };
 
   const handleInputChange = (
     field: string,
     value: number | string | string[] | Coordinates
   ) => {
     setFormData({ ...formData, [field]: value });
-    validateFormField(field, value);
   };
 
-  const removeImages = () => {
-    handleInputChange("images", []);
-    validateFormField("images", []);
-  };
-
-  const validateFormField = (
-    field: string,
-    value: number | string | string[] | Coordinates
-  ) => {
-    let message = "";
-    if (field === "images" && !(value as string[]).length) {
-      console.log("=== IMAGES ERROR ===");
-      message = "Insira ao menos uma imagem";
-    } else if (!value) {
-      console.log("=== VALUE ERROR ===");
-      const labelFieldReference = {
-        name: "Nome",
-        age: "Idade",
-        color: "Cor",
-        breed: "Raça",
-      };
-      message = `${
-        labelFieldReference[field as keyof typeof labelFieldReference]
-      } é obrigatório`;
-    }
-    setErrors({ ...errors, [field]: message });
+  const handleInputTouched = (field: keyof FormTouched) => {
+    setTouched({ ...touched, [field]: true });
   };
 
   const validateForm = () => {
-    const newErrors: typeof errors = { ...initialErrors };
-    if (!formData.images.length) {
+    const newErrors: FormErrors = { ...initialErrors };
+    if (touched.images && !formData.images.length) {
       newErrors.images = "Insira ao menos uma imagem";
     }
-    if (!formData.name) {
+    if (touched.name && !formData.name) {
       newErrors.name = "Nome é obrigatório";
     }
-    if (!formData.color) {
+    if (touched.color && !formData.color) {
       newErrors.color = "Cor é obrigatório";
     }
-    if (!formData.breed) {
+    if (touched.breed && !formData.breed) {
       newErrors.breed = "Raça é obrigatório";
     }
-    if (!formData.description) {
+    if (touched.description && !formData.description) {
       newErrors.description = "Descrição é obrigatório";
     }
     setErrors(newErrors);
-    setIsFormValid(Object.keys(newErrors).length === 0);
+    setIsFormValid(Object.values(newErrors).every((err) => !err));
   };
 
   const handleSubmit = () => {
-    validateForm();
+    setTouched({
+      images: true,
+      name: true,
+      color: true,
+      breed: true,
+      description: true,
+    });
     if (isFormValid) {
       setLoading(true);
       createPost(formData);
       setTimeout(() => setLoading(false), 2000);
     }
   };
+
+  const handleClear = () => {
+    setFormData({ ...initialFormData });
+    setTouched({ ...initialTouched });
+    setErrors({ ...initialErrors });
+  };
+
+  useEffect(() => {
+    validateForm();
+  }, [formData, touched]);
 
   return (
     <SafeAreaProvider style={{ backgroundColor: "#fff" }}>
@@ -115,10 +140,10 @@ export default function NewPost() {
           <View>
             <ImagePickerCarousel
               selectedImages={formData.images}
-              setImages={(images) => handleInputChange("images", images)}
-              removeImages={removeImages}
+              onChange={handleImageSelect}
+              onRemove={handleImageRemove}
             />
-            {errors.images ? (
+            {touched.images && errors.images ? (
               <Text style={styles.errorMessage}>{errors.images}</Text>
             ) : null}
           </View>
@@ -134,42 +159,45 @@ export default function NewPost() {
             <View style={styles.inputBlock}>
               <InputField
                 label="Nome"
-                initValue={formData.name}
+                value={formData.name}
                 maxLength={30}
                 error={!!errors.name}
                 errorMessage={errors.name}
                 required
                 onChange={(name) => handleInputChange("name", name)}
+                onBlur={() => handleInputTouched("name")}
               />
               <View style={styles.inputRow}>
                 <NumberField
                   label="Idade"
-                  initValue={formData.age}
+                  value={formData.age || 0}
                   min={0}
                   onChange={(age) => handleInputChange("age", age)}
                 />
                 <InputField
                   label="Cor"
-                  initValue={formData.color}
+                  value={formData.color}
                   maxLength={30}
                   error={!!errors.color}
                   errorMessage={errors.color}
                   required
                   onChange={(color) => handleInputChange("color", color)}
+                  onBlur={() => handleInputTouched("color")}
                 />
               </View>
               <InputField
                 label="Raça"
-                initValue={formData.breed}
+                value={formData.breed}
                 maxLength={30}
                 error={!!errors.breed}
                 errorMessage={errors.breed}
                 required
                 onChange={(breed) => handleInputChange("breed", breed)}
+                onBlur={() => handleInputTouched("breed")}
               />
               <InputField
                 label="Descrição"
-                initValue={formData.description}
+                value={formData.description}
                 multiline
                 maxLength={250}
                 error={!!errors.description}
@@ -178,6 +206,7 @@ export default function NewPost() {
                 onChange={(description) =>
                   handleInputChange("description", description)
                 }
+                onBlur={() => handleInputTouched("description")}
               />
             </View>
             <View>
@@ -188,8 +217,7 @@ export default function NewPost() {
               </Text>
             </View>
             <CurrencyField
-              placeholder="R$ 0,00"
-              initValue={formData.reward}
+              value={formData.reward || 0}
               onChange={(reward) => handleInputChange("reward", reward)}
             />
             <View>
@@ -210,6 +238,7 @@ export default function NewPost() {
               primary
               onPress={handleSubmit}
             />
+            <Button label="Limpar" onPress={handleClear} />
           </View>
         </ScrollView>
       </SafeAreaView>

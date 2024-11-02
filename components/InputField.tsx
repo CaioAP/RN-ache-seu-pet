@@ -8,32 +8,31 @@ import LabelField from "./LabelField";
 interface Props {
   label?: string;
   placeholder?: string;
-  initValue: string | undefined;
+  value: string;
   maxLength?: number;
   multiline?: boolean;
   required?: boolean;
   error?: boolean;
   errorMessage?: string;
   onChange: (text: string) => void;
+  onBlur?: () => void;
 }
 
 export default function InputField({
   label,
   placeholder,
-  initValue,
+  value,
   maxLength,
   multiline,
   required,
   error,
   errorMessage,
   onChange,
+  onBlur,
 }: Props) {
-  const [value, setValue] = useState(initValue);
-
-  const onChangeText = (text: string) => {
-    if (maxLength !== undefined && text.length >= maxLength) return;
-    setValue(text);
-    onChange(text);
+  const onChangeText = (newValue: string) => {
+    if (maxLength !== undefined && newValue.length >= maxLength) return;
+    onChange(newValue);
   };
 
   return (
@@ -51,6 +50,7 @@ export default function InputField({
         style={styles.input}
         outlineStyle={styles.inputWrapper}
         onChangeText={onChangeText}
+        onBlur={onBlur}
       />
       <Text style={styles.errorMessage}>{errorMessage}</Text>
     </View>

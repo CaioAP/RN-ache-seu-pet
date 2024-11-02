@@ -18,14 +18,14 @@ const windowWidth = Dimensions.get("window").width;
 
 interface Props {
   selectedImages: string[];
-  setImages: (images: string[]) => void;
-  removeImages: () => void;
+  onChange: (images: string[]) => void;
+  onRemove: () => void;
 }
 
 export default function ImagePickerCarousel({
   selectedImages,
-  setImages,
-  removeImages,
+  onChange,
+  onRemove,
 }: Props) {
   const pagerRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -40,7 +40,7 @@ export default function ImagePickerCarousel({
     });
 
     if (!result.canceled) {
-      setImages(result.assets.map((asset) => asset.uri));
+      onChange(result.assets.map((asset) => asset.uri));
     }
   };
 
@@ -96,7 +96,7 @@ export default function ImagePickerCarousel({
             </View>
           </View>
           <View style={styles.buttonDelete}>
-            <ButtonIcon icon="trash" onPress={removeImages} />
+            <ButtonIcon icon="trash" onPress={onRemove} />
           </View>
         </>
       )}

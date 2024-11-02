@@ -7,7 +7,7 @@ import { TextInput } from "react-native-paper";
 interface Props {
   label?: string;
   placeholder?: string;
-  initValue: number | undefined;
+  value: number | undefined;
   maxLength?: number;
   onChange: (currency: number) => void;
 }
@@ -22,7 +22,9 @@ const formatToCurrency = (amount: number): string => {
 
 const parseCurrencyToNumber = (currency: string): number => {
   const [integerPart, decimalPart] = currency.split(",");
-  return Number(`${integerPart.replace(/[^0-9]/g, "")}.${decimalPart || 0}`);
+  return (
+    Number(`${integerPart.replace(/[^0-9]/g, "")}.${decimalPart || 0}`) * 100
+  );
 };
 
 const maskCurrency = (input: string): string => {
@@ -38,17 +40,14 @@ const maskCurrency = (input: string): string => {
 export default function CurrencyField({
   label,
   placeholder,
-  initValue,
+  value,
   maxLength = 18,
   onChange,
 }: Props) {
-  const [value, setValue] = useState(formatToCurrency(initValue || 0));
-
-  const onChangeText = (text: string) => {
-    if (maxLength !== undefined && text.length >= maxLength) return;
-    text = maskCurrency(text);
-    setValue(text);
-    onChange(parseCurrencyToNumber(text));
+  const onChangeText = (newValue: string) => {
+    if (maxLength !== undefined && newValue.length >= maxLength) return;
+    newValue = maskCurrency(newValue);
+    onChange(parseCurrencyToNumber(newValue));
   };
 
   return (
@@ -59,7 +58,7 @@ export default function CurrencyField({
       keyboardType="numeric"
       label={label}
       placeholder={placeholder}
-      value={value}
+      value={formatToCurrency(value || 0)}
       style={styles.input}
       outlineStyle={styles.inputWrapper}
       onChangeText={onChangeText}
